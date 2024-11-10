@@ -9,10 +9,10 @@
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="448.0" prefWidth="703.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.userHome">
+<AnchorPane prefHeight="430.0" prefWidth="692.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.userHome">
    <children>
       <Label layoutX="265.0" layoutY="24.0" text=" USER HOME PAGE" />
-      <Button layoutX="604.0" layoutY="20.0" mnemonicParsing="false" text="Logout" />
+      <Button fx:id="logoutbutton" layoutX="604.0" layoutY="20.0" mnemonicParsing="false" text="Logout" onAction="#switchToLogin" />
       <SplitPane dividerPositions="0.777906976744186" layoutY="61.0" prefHeight="362.0" prefWidth="689.0">
          <items>
             <!-- Left Panel with TableView -->

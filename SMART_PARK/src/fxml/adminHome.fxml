@@ -11,7 +11,7 @@
 <AnchorPane prefHeight="423.0" prefWidth="688.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.adminHome">
    <children>
       <Label layoutX="265.0" layoutY="24.0" text=" ADMIN HOME PAGE" />
-      <Button layoutX="604.0" layoutY="20.0" mnemonicParsing="false" text="Logout" />
+      <Button fx:id="logoutbutton" layoutX="604.0" layoutY="20.0" mnemonicParsing="false" text="Logout" onAction="#switchToLogin" />
       <SplitPane dividerPositions="0.780813953488372" layoutY="61.0" prefHeight="362.0" prefWidth="689.0">
          <items>
             <!-- Left Panel with TableView -->
