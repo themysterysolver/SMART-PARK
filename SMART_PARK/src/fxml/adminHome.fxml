@@ -16,7 +16,7 @@
       <SplitPane dividerPositions="0.780813953488372" layoutY="61.0" prefHeight="362.0" prefWidth="689.0">
          <items>
             <!-- Left Panel with TableView -->
-            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="345.0" prefWidth="226.0" />
+            <AnchorPane fx:id="LHS" minHeight="0.0" minWidth="0.0" prefHeight="345.0" prefWidth="226.0" />
 
             <!-- Right Panel with Buttons -->
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="361.0" prefWidth="158.0">
