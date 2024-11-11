@@ -7,12 +7,13 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
 <AnchorPane prefHeight="430.0" prefWidth="692.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.userHome">
    <children>
-      <Label layoutX="265.0" layoutY="24.0" text=" USER HOME PAGE" />
-      <Button fx:id="logoutbutton" layoutX="604.0" layoutY="20.0" mnemonicParsing="false" text="Logout" onAction="#switchToLogin" />
+      <Label layoutX="281.0" layoutY="24.0" text=" USER HOME PAGE" />
+      <Button fx:id="logoutbutton" layoutX="604.0" layoutY="20.0" mnemonicParsing="false" onAction="#switchToLogin" text="Logout" />
       <SplitPane dividerPositions="0.777906976744186" layoutY="61.0" prefHeight="362.0" prefWidth="689.0">
          <items>
             <!-- Left Panel with TableView -->
@@ -36,5 +37,7 @@
             </AnchorPane>
          </items>
       </SplitPane>
+      <TextField layoutX="26.0" layoutY="20.0" />
+      <Button layoutX="183.0" layoutY="20.0" mnemonicParsing="false" text="S" />
    </children>
 </AnchorPane>

@@ -6,6 +6,7 @@
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
 <AnchorPane prefHeight="423.0" prefWidth="688.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.adminHome">
@@ -34,5 +35,7 @@
             </AnchorPane>
          </items>
       </SplitPane>
+      <Button layoutX="177.0" layoutY="20.0" mnemonicParsing="false" text="S" />
+      <TextField layoutX="14.0" layoutY="20.0" />
    </children>
 </AnchorPane>
