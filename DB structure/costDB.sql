@@ -1,0 +1,6 @@
+CREATE TABLE cost (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    type VARCHAR(20) NOT NULL,
+    cost DECIMAL(10, 2) NOT NULL
+);
+
