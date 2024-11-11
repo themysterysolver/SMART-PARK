@@ -13,15 +13,14 @@
       <Button fx:id="backButton" layoutX="518.0" layoutY="22.0" mnemonicParsing="false" onAction="#switchToAdmin" text="Back" />
       <Label layoutX="46.0" layoutY="61.0" text="Add new slots" />
       <Label layoutX="46.0" layoutY="104.0" text="Remove slots" />
-      <Label layoutX="46.0" layoutY="142.0" text="Type" />
-      <Label layoutX="45.0" layoutY="183.0" text="Cost for bike" />
-      <Label layoutX="46.0" layoutY="222.0" text="Cost for cars" />
-      <ChoiceBox fx:id="typeChoiceBox" layoutX="142.0" layoutY="138.0" prefWidth="150.0" />
+      <Label layoutX="46.0" layoutY="142.0" />
+      <Label layoutX="45.0" layoutY="151.0" text="Cost for bike" />
+      <Label layoutX="46.0" layoutY="191.0" text="Cost for cars" />
       <Slider fx:id="slotSlider" layoutX="152.0" layoutY="63.0" max="100" />
       <Label fx:id="sliderValueLabel" layoutX="310.0" layoutY="63.0" text="0" />
-      <ChoiceBox layoutX="142.0" layoutY="100.0" prefWidth="150.0" />
-      <TextField fx:id="bikeCostTextField" layoutX="143.0" layoutY="188.0" text="15" />
-      <TextField fx:id="carCostTextField" layoutX="142.0" layoutY="227.0" text="100" />
+      <ChoiceBox fx:id="slotChoiceBox" layoutX="142.0" layoutY="100.0" prefWidth="150.0" />
+      <TextField fx:id="bikeCostTextField" layoutX="142.0" layoutY="147.0" text="15" />
+      <TextField fx:id="carCostTextField" layoutX="142.0" layoutY="187.0" text="100" />
       <Label layoutX="255.0" layoutY="14.0" text="SETTINGS" />
    </children>
 </AnchorPane>
