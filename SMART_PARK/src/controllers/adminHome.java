@@ -16,6 +16,7 @@ public class adminHome {
 
     @FXML
     private void switchToLogin(){
+        SessionManager.getInstance().clearSession();
         FXMLLoader loader=new FXMLLoader(getClass().getResource("/fxml/signin.fxml"));
         try {
             Parent root = loader.load();
@@ -25,6 +26,20 @@ public class adminHome {
         } catch (IOException e) {
             e.printStackTrace();
             showAlert("Error", "Failed to LOGOUT from user home.", Alert.AlertType.ERROR);
+        }
+    }
+
+    @FXML
+    private void switchToSettings(){
+        FXMLLoader loader=new FXMLLoader(getClass().getResource("/fxml/settings.fxml"));
+        try {
+            Parent root = loader.load();
+            Scene scene = new Scene(root);
+            Stage stage=(Stage) logoutbutton.getScene().getWindow();
+            stage.setScene(scene);
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert("Error", "Failed to go to SEETINGS.", Alert.AlertType.ERROR);
         }
     }
 

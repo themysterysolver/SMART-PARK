@@ -35,6 +35,8 @@ public class login{
         }
         String role = validateLogin(username, password);
         if (role != null) {
+            SessionManager.getInstance().setUsername(username);
+            SessionManager.getInstance().setRole(role);
             showAlert("Success", "Login successful! Role: " + role, Alert.AlertType.INFORMATION);
             if (role.equals("admin")) {
                 switchToAdminHome();  // Switch to admin home

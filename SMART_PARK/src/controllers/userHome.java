@@ -16,6 +16,7 @@ public class userHome {
 
     @FXML
     private void switchToLogin(){
+        SessionManager.getInstance().clearSession();
         FXMLLoader loader=new FXMLLoader(getClass().getResource("/fxml/signin.fxml"));
         try {
             Parent root = loader.load();
