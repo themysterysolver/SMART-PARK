@@ -36,6 +36,8 @@
 
       <!-- Feedback Area -->
       <TextArea fx:id="feedbackArea" editable="false" layoutX="443.0" layoutY="20.0" prefHeight="62.0" prefWidth="135.0" wrapText="true" />
-      <Button layoutX="332.0" layoutY="204.0" mnemonicParsing="false" text="G" />
+      <!-- Generate useraname-->
+      <Button fx:id="generateButton" layoutX="332.0" layoutY="204.0" mnemonicParsing="false" onAction="#generateUsername" text="G" />
+
    </children>
 </AnchorPane>

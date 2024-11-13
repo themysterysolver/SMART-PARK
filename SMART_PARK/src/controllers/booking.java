@@ -99,7 +99,38 @@ public class booking implements Initializable {
         alert.setContentText(content);
         alert.showAndWait();
     }
+    @FXML
+    private void generateUsername() {
+        String generatedUsername = "";
+        int nextId = 1;
 
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/smart_park", "root", "")) {
+            // Retrieve the next available ID in users table
+            String sql = "SELECT COALESCE(MAX(userid), 0) + 1 AS next_id FROM users";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+
+            if (rs.next()) {
+                nextId = rs.getInt("next_id");
+            }
+
+            // Generate username based on next available ID
+            generatedUsername = "user_" + nextId;
+
+            // Insert new user with generated username
+            String insertUser = "INSERT INTO users (username, password, type) VALUES (?, 'xxxx', 'user')";
+            PreparedStatement pstmt = conn.prepareStatement(insertUser);
+            pstmt.setString(1, generatedUsername);
+            pstmt.executeUpdate();
+
+            // Display generated username in userIdField
+            userIdField.setText(generatedUsername);
+
+        } catch (Exception e) {
+            e.printStackTrace(); // Print the error to console for debugging
+        }
+    }
     public void bookSlot(ActionEvent actionEvent) {
+
     }
 }
