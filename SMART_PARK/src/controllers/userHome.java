@@ -6,22 +6,26 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.TilePane;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.sql.*;
+import java.util.Comparator;
 
 public class userHome {
     @FXML
     private Button logoutbutton;
+    @FXML
+    private Button historyButton;  // Button to open transaction history
 
     @FXML
     public TableView statusTableView;
@@ -179,11 +183,122 @@ public class userHome {
         }
     }
 
+    @FXML
+    private void showHistoryDialog() {
+        // Get userID from session (use the username to query the database for userID)
+        String username = SessionManager.getInstance().getUsername();  // Assuming username is stored in the session
+        String userID = getUserIDFromUsername(username);
+
+        if (userID != null) {
+            // Create a new Stage (Dialog) for the history
+            Stage dialog = new Stage();
+            dialog.initModality(Modality.APPLICATION_MODAL);
+            dialog.setTitle("Transaction History");
+
+            // Create TableView for transactions
+            TableView<TransactionRecord> transactionTable = new TableView<>();
+            TableColumn<TransactionRecord, Integer> transactionIDColumn = new TableColumn<>("Transaction ID");
+            transactionIDColumn.setCellValueFactory(cellData -> cellData.getValue().transactionIDProperty().asObject());
+
+            TableColumn<TransactionRecord, Integer> slotIDColumn = new TableColumn<>("Slot ID");
+            slotIDColumn.setCellValueFactory(cellData -> cellData.getValue().slotIDProperty().asObject());
+
+            TableColumn<TransactionRecord, String> startDateColumn = new TableColumn<>("Start Date");
+            startDateColumn.setCellValueFactory(cellData -> cellData.getValue().startDateProperty());
+
+            TableColumn<TransactionRecord, String> endDateColumn = new TableColumn<>("End Date");
+            endDateColumn.setCellValueFactory(cellData -> cellData.getValue().endDateProperty());
+
+            TableColumn<TransactionRecord, Double> costColumn = new TableColumn<>("Cost");
+            costColumn.setCellValueFactory(cellData -> cellData.getValue().costProperty().asObject());
+
+            TableColumn<TransactionRecord, String> typeColumn = new TableColumn<>("Type");
+            typeColumn.setCellValueFactory(cellData -> cellData.getValue().typeProperty());
+
+            // Add columns to the table
+            transactionTable.getColumns().addAll(transactionIDColumn, slotIDColumn, startDateColumn, endDateColumn, costColumn, typeColumn);
+
+            // Fetch transaction data
+            ObservableList<TransactionRecord> transactionList = fetchTransactionHistory(userID);
+
+            // Add data to the table
+            transactionTable.setItems(transactionList);
+
+            // Sort Button
+            Button sortButton = new Button("Sort by Date");
+            sortButton.setOnAction(e -> {
+                FXCollections.sort(transactionList, Comparator.comparing(TransactionRecord::getStartDate));
+                // Toggle sorting order between ascending and descending
+                FXCollections.reverse(transactionList);
+            });
+
+            VBox layout = new VBox(10, transactionTable, sortButton);
+            dialog.setScene(new Scene(layout, 600, 400));
+            dialog.show();
+        } else {
+            showAlert("Error", "User not found.", Alert.AlertType.ERROR);
+        }
+    }
+    private String getUserIDFromUsername(String username) {
+        String userID = null;
+        String query = "SELECT userid FROM users WHERE username = ?";
+
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/smart_park", "root", "");
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setString(1, username);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    userID = rs.getString("userid");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showAlert("Error", "Failed to fetch userID from the database.", Alert.AlertType.ERROR);
+        }
+
+        return userID;
+    }
+    private ObservableList<TransactionRecord> fetchTransactionHistory(String userID) {
+        ObservableList<TransactionRecord> transactionList = FXCollections.observableArrayList();
+
+        String url = "jdbc:mysql://localhost:3306/smart_park";
+        String user = "root";
+        String password = "";
+
+        String query = "SELECT transactionID, slotID, startDate, endDate, cost, type FROM transactions WHERE userID = ?";
+
+        try (Connection conn = DriverManager.getConnection(url, user, password);
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setString(1, userID);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    int transactionID = rs.getInt("transactionID");
+                    int slotID = rs.getInt("slotID");
+                    String startDate = rs.getString("startDate");
+                    String endDate = rs.getString("endDate");
+                    double cost = rs.getDouble("cost");
+                    String type = rs.getString("type");
+
+                    transactionList.add(new TransactionRecord(transactionID, slotID, startDate, endDate, cost, type));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showAlert("Error", "Failed to fetch transaction history.", Alert.AlertType.ERROR);
+        }
+
+        return transactionList;
+    }
+
+
     private void showAlert(String title, String content, Alert.AlertType alertType) {
-        Alert alert=new Alert(alertType);
+        Alert alert = new Alert(alertType);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(content);
         alert.showAndWait();
     }
 }
+
