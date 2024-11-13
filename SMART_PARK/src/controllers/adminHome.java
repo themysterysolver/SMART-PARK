@@ -93,7 +93,7 @@ public class adminHome {
     // Method to fetch vehicle number for a given vehicleID
     private String getVehicleNumber(int vehicleID) {
         String vehicleNumber = null;
-        String query = "SELECT vehicleNumber FROM vehicles WHERE vehicleID = ?";
+        String query = "SELECT registration_number FROM vehicles WHERE vehicleID = ?";
 
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/smart_park", "root", "");
              PreparedStatement stmt = conn.prepareStatement(query)) {

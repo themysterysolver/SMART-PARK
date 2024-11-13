@@ -16,6 +16,8 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -130,7 +132,56 @@ public class booking implements Initializable {
             e.printStackTrace(); // Print the error to console for debugging
         }
     }
+    @FXML
     public void bookSlot(ActionEvent actionEvent) {
+        String registrationNumber = vehicleNumberField.getText();
+        String vehicleType = typeChoiceBox.getValue();
+        String selectedSlot = slotChoiceBox.getValue();
+        String username = userIdField.getText();
 
+        if (registrationNumber.isEmpty() || vehicleType == null || selectedSlot == null || username.isEmpty()) {
+            showAlert("Booking Error", "Please fill in all fields", Alert.AlertType.WARNING);
+            return;
+        }
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USERNAME, DB_PASSWORD)) {
+            conn.setAutoCommit(false);
+
+            // Insert vehicle record
+            String insertVehicleQuery = "INSERT INTO vehicles (userid, vehicle_type, registration_number) VALUES ((SELECT userid FROM users WHERE username = ?), ?, ?)";
+            try (PreparedStatement vehicleStmt = conn.prepareStatement(insertVehicleQuery, Statement.RETURN_GENERATED_KEYS)) {
+                vehicleStmt.setString(1, username);
+                vehicleStmt.setString(2, vehicleType);
+                vehicleStmt.setString(3, registrationNumber);
+                vehicleStmt.executeUpdate();
+
+                ResultSet generatedKeys = vehicleStmt.getGeneratedKeys();
+                if (!generatedKeys.next()) {
+                    throw new SQLException("Failed to retrieve vehicle ID.");
+                }
+                int vehicleID = generatedKeys.getInt(1);
+
+                // Update slot status
+                String updateSlotQuery = "UPDATE slots SET availability = 'booked', vehicleID = ?, startDate = ?, startTime = ? WHERE slotID = ?";
+                try (PreparedStatement slotStmt = conn.prepareStatement(updateSlotQuery)) {
+                    LocalDateTime now = LocalDateTime.now();
+                    String currentDate = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                    String currentTime = now.format(DateTimeFormatter.ofPattern("HH:mm:ss"));
+
+                    slotStmt.setInt(1, vehicleID);
+                    slotStmt.setString(2, currentDate);
+                    slotStmt.setString(3, currentTime);
+                    slotStmt.setInt(4, Integer.parseInt(selectedSlot));
+                    slotStmt.executeUpdate();
+                }
+                conn.commit();
+            }
+
+            showAlert("Booking Successful", "Booking successful for vehicle " + registrationNumber, Alert.AlertType.INFORMATION);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showAlert("Booking Error", "Error during booking: " + e.getMessage(), Alert.AlertType.ERROR);
+        }
     }
 }
