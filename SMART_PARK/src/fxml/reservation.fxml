@@ -17,11 +17,6 @@
         <TextField fx:id="vehicleNumberField" layoutX="170.0" layoutY="96.0" promptText="Enter Vehicle Number" />
         <ChoiceBox fx:id="typeChoiceBox" layoutX="170.0" layoutY="132.0" prefWidth="150.0">
             <items>
-                <FXCollections fx:factory="observableArrayList">
-                    <String fx:value="Select Type" />
-                    <String fx:value="Bike" />
-                    <String fx:value="Car" />
-                </FXCollections>
             </items>
         </ChoiceBox>
         <Label layoutX="59.0" layoutY="172.0" text="SLOT AVAILABLE" />

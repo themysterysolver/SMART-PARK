@@ -1,5 +1,7 @@
 package controllers;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -16,6 +18,7 @@ import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.io.IOException;
 import java.sql.*;
@@ -62,6 +65,78 @@ public class userHome {
         statusTableView.getColumns().add(countColumn);
 
         fetchSlotCounts();  // Fetch and display slot counts on initialization
+
+        // Schedule a task to periodically check and update slot availability every minute
+        Timeline timeline = new Timeline(new KeyFrame(Duration.minutes(1), e -> updateSlotAvailability()));
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.play();
+    }
+    private void updateSlotAvailability() {
+        // Get current time
+        long currentTimeMillis = System.currentTimeMillis();
+        String url = "jdbc:mysql://localhost:3306/smart_park";
+        String user = "root";
+        String password = "";
+
+        String query = "SELECT slotID, startDate, startTime, endDate, endTime FROM slots WHERE availability = 'reserved'";
+
+        try (Connection conn = DriverManager.getConnection(url, user, password);
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+
+            while (rs.next()) {
+                int slotID = rs.getInt("slotID");
+                String startDate = rs.getString("startDate");
+                String startTime = rs.getString("startTime");
+                String endDate = rs.getString("endDate");
+                String endTime = rs.getString("endTime");
+
+                // Convert start and end date-time to millis
+                long startMillis = getDateTimeInMillis(startDate, startTime);
+                long endMillis = getDateTimeInMillis(endDate, endTime);
+
+                // If the current time is past the end time, update the slot to available
+                if (currentTimeMillis > endMillis) {
+                    updateSlotStatus(slotID, "available");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showAlert("Error", "Failed to fetch and update slot availability.", Alert.AlertType.ERROR);
+        }
+    }
+
+    private long getDateTimeInMillis(String date, String time) {
+        try {
+            String dateTimeString = date + " " + time;
+            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            java.util.Date dateObj = sdf.parse(dateTimeString);
+            return dateObj.getTime();
+        } catch (java.text.ParseException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    private void updateSlotStatus(int slotID, String newStatus) {
+        String url = "jdbc:mysql://localhost:3306/smart_park";
+        String user = "root";
+        String password = "";
+
+        String updateQuery = "UPDATE slots SET availability = ? WHERE slotID = ?";
+
+        try (Connection conn = DriverManager.getConnection(url, user, password);
+             PreparedStatement stmt = conn.prepareStatement(updateQuery)) {
+            stmt.setString(1, newStatus);
+            stmt.setInt(2, slotID);
+            stmt.executeUpdate();
+
+            // Update the UI to reflect the changes (assuming slot buttons are already in the UI)
+            fetchSlotData();  // Re-fetch and update the slot data
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showAlert("Error", "Failed to update slot status.", Alert.AlertType.ERROR);
+        }
     }
     private void fetchSlotCounts() {
         String url = "jdbc:mysql://localhost:3306/smart_park";  // Your DB URL
