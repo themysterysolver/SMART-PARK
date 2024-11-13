@@ -182,7 +182,19 @@ public class userHome {
             showAlert("Error", "Failed to LOGOUT from user home.", Alert.AlertType.ERROR);
         }
     }
-
+    @FXML
+    private void switchToReservation(){
+        FXMLLoader loader=new FXMLLoader(getClass().getResource("/fxml/reservation.fxml"));
+        try {
+            Parent root = loader.load();
+            Scene scene = new Scene(root);
+            Stage stage=(Stage) logoutbutton.getScene().getWindow();
+            stage.setScene(scene);
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert("Error", "Failed to LOGOUT from user home.", Alert.AlertType.ERROR);
+        }
+    }
     @FXML
     private void showHistoryDialog() {
         // Get userID from session (use the username to query the database for userID)

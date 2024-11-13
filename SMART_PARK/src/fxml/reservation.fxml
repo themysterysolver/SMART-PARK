@@ -4,7 +4,6 @@
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
@@ -13,18 +12,19 @@
         <Label layoutX="244.0" layoutY="34.0" text="Reservation from user" />
         <Label layoutX="60.0" layoutY="100.0" text="VEHICLE NUMBER" />
         <Label layoutX="60.0" layoutY="136.0" text="TYPE" />
-        <TextField layoutX="170.0" layoutY="96.0" />
-        <ChoiceBox layoutX="170.0" layoutY="132.0" prefWidth="150.0" />
+        <TextField fx:id="vehicleNumberField" layoutX="170.0" layoutY="96.0" />
+        <ChoiceBox fx:id="typeChoiceBox" layoutX="170.0" layoutY="132.0" prefWidth="150.0" />
         <Label layoutX="59.0" layoutY="172.0" text="SLOT AVAILABLE" />
-        <ChoiceBox layoutX="170.0" layoutY="168.0" prefWidth="150.0" />
-        <Button layoutX="452.0" layoutY="332.0" mnemonicParsing="false" text="Make reservation" />
-        <Button layoutX="389.0" layoutY="332.0" mnemonicParsing="false" text="cancel" />
-      <DatePicker layoutX="170.0" layoutY="207.0" />
-      <Label layoutX="59.0" layoutY="211.0" text="DATE" />
-      <Label layoutX="59.0" layoutY="243.0" text="FROM" />
-      <Label layoutX="59.0" layoutY="275.0" text="TO" />
-      <TextField layoutX="170.0" layoutY="239.0" />
-      <TextField layoutX="169.0" layoutY="271.0" />
-      <TextArea layoutX="454.0" layoutY="9.0" prefHeight="62.0" prefWidth="135.0" />
+        <ChoiceBox fx:id="slotChoiceBox" layoutX="170.0" layoutY="168.0" prefWidth="150.0" />
+        <Button fx:id="makeReservationButton" layoutX="452.0" layoutY="332.0" mnemonicParsing="false" text="Make reservation" onAction="#makeReservation"/>
+        <Button fx:id="cancelButton" layoutX="389.0" layoutY="332.0" mnemonicParsing="false" text="Cancel" onAction="#switchTouserHome"/>
+        <DatePicker fx:id="startDatePicker" layoutX="170.0" layoutY="207.0" />
+        <Label layoutX="59.0" layoutY="211.0" prefHeight="18.0" prefWidth="89.0" text="START DATE" />
+        <Label layoutX="58.0" layoutY="276.0" text="FROM" />
+        <Label layoutX="57.0" layoutY="315.0" prefHeight="18.0" prefWidth="34.0" text="TO" />
+        <TextField fx:id="fromTimeField" layoutX="170.0" layoutY="281.0" />
+        <TextField fx:id="toTimeField" layoutX="170.0" layoutY="312.0" />
+        <Label layoutX="61.0" layoutY="239.0" text="END DATE" />
+        <DatePicker fx:id="endDatePicker" layoutX="170.0" layoutY="244.0" />
     </children>
 </AnchorPane>

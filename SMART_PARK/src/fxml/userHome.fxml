@@ -19,7 +19,7 @@
             <!-- Right Panel with Reserve and History Buttons, and Status Table -->
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="361.0" prefWidth="123.0">
                <children>
-                  <Button layoutX="19.0" layoutY="14.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="102.0" text="Reserve" />
+                  <Button layoutX="19.0" layoutY="14.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="102.0" text="Reserve" onAction="#switchToReservation"/>
                   <Separator layoutY="167.0" prefHeight="7.0" prefWidth="148.0" />
                   <TableView fx:id="statusTableView" layoutY="171.0" prefHeight="190.0" prefWidth="148.0">
 
