@@ -7,7 +7,6 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-
 <AnchorPane prefHeight="361.0" prefWidth="598.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.booking">
    <children>
       <Label layoutX="244.0" layoutY="34.0" text="Booking from Admin" />
@@ -21,7 +20,7 @@
       <Button layoutX="338.0" layoutY="204.0" mnemonicParsing="false" text="G" />
       <TextField layoutX="171.0" layoutY="204.0" />
       <Button layoutX="478.0" layoutY="292.0" mnemonicParsing="false" text="Book it!" />
-      <Button layoutX="418.0" layoutY="292.0" mnemonicParsing="false" text="cancel" />
+      <Button fx:id="cancel" layoutX="418.0" layoutY="292.0" mnemonicParsing="false" text="cancel" onAction="#switchToadminHome"/>
       <TextArea layoutX="443.0" layoutY="20.0" prefHeight="62.0" prefWidth="135.0" />
    </children>
 </AnchorPane>

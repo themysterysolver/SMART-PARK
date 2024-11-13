@@ -6,12 +6,11 @@
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
 <AnchorPane prefHeight="423.0" prefWidth="688.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.adminHome">
    <children>
-      <Label layoutX="265.0" layoutY="24.0" text=" ADMIN HOME PAGE" />
+      <Label layoutX="238.0" layoutY="24.0" text=" ADMIN HOME PAGE" />
       <Button fx:id="logoutbutton" layoutX="604.0" layoutY="20.0" mnemonicParsing="false" onAction="#switchToLogin" text="Logout" />
       <SplitPane dividerPositions="0.780813953488372" layoutY="61.0" prefHeight="362.0" prefWidth="689.0">
          <items>
@@ -21,7 +20,7 @@
             <!-- Right Panel with Buttons -->
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="361.0" prefWidth="158.0">
                <children>
-                  <Button layoutX="19.0" layoutY="14.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="102.0" text="Book" />
+                  <Button layoutX="19.0" layoutY="14.0" mnemonicParsing="false" onAction="#switchToBooking" prefHeight="40.0" prefWidth="102.0" text="Book" />
                   <Button layoutX="19.0" layoutY="62.0" mnemonicParsing="false" onAction="#switchToSettings" prefHeight="40.0" prefWidth="102.0" text="Settings" />
                   <Button layoutX="18.0" layoutY="110.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="102.0" text="Report" />
                   <Separator layoutY="167.0" prefHeight="7.0" prefWidth="148.0" />
@@ -35,7 +34,5 @@
             </AnchorPane>
          </items>
       </SplitPane>
-      <Button layoutX="177.0" layoutY="20.0" mnemonicParsing="false" text="S" />
-      <TextField layoutX="14.0" layoutY="20.0" />
    </children>
 </AnchorPane>

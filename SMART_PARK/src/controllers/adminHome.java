@@ -141,6 +141,20 @@ public class adminHome {
         }
     }
 
+    @FXML
+    private void switchToBooking(){
+        FXMLLoader loader=new FXMLLoader(getClass().getResource("/fxml/booking.fxml"));
+        try {
+            Parent root = loader.load();
+            Scene scene = new Scene(root);
+            Stage stage=(Stage) logoutbutton.getScene().getWindow();
+            stage.setScene(scene);
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert("Error", "Failed to go to Booking.", Alert.AlertType.ERROR);
+        }
+    }
+
     private void showAlert(String title, String content, Alert.AlertType alertType) {
         Alert alert=new Alert(alertType);
         alert.setTitle(title);
