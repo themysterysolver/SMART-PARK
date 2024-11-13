@@ -127,19 +127,23 @@ public class adminHome {
         String endDate = currentTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         String endTime = currentTime.format(DateTimeFormatter.ofPattern("HH:mm:ss"));
 
+        // Fetch the userID associated with the vehicle
+        Integer userID = getUserIDForVehicle(vehicleID);
+
         // Insert the transaction record into the transaction table
-        String transactionQuery = "INSERT INTO transactions (slotID, vehicleID, cost, startDate, startTime, endDate, endTime, duration) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String transactionQuery = "INSERT INTO transactions (slotID, vehicleID, userID, cost, startDate, startTime, endDate, endTime, duration) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/smart_park", "root", "");
              PreparedStatement stmt = conn.prepareStatement(transactionQuery)) {
             stmt.setInt(1, slotID);
             stmt.setInt(2, vehicleID);
-            stmt.setDouble(3, totalCost);
-            stmt.setString(4, startDate);
-            stmt.setString(5, startTime);
-            stmt.setString(6, endDate);
-            stmt.setString(7, endTime);
-            stmt.setLong(8, durationInMinutes);  // Insert durationInHours
+            stmt.setInt(3, userID);  // Insert the userID into the transaction
+            stmt.setDouble(4, totalCost);
+            stmt.setString(5, startDate);
+            stmt.setString(6, startTime);
+            stmt.setString(7, endDate);
+            stmt.setString(8, endTime);
+            stmt.setLong(9, durationInMinutes);  // Insert durationInMinutes
             stmt.executeUpdate();
 
             // Update the slot status and clear vehicle-related data in the slot table
@@ -152,6 +156,7 @@ public class adminHome {
             // Clear the existing slot buttons and reload the updated data
             slotTilePane.getChildren().clear(); // Clear the old slot buttons
             fetchSlotData();
+
             // Show success message
             showAlert("Success", "Booking completed successfully!", Alert.AlertType.INFORMATION);
         } catch (SQLException e) {
@@ -159,6 +164,25 @@ public class adminHome {
             showAlert("Error", "Failed to complete the booking.", Alert.AlertType.ERROR);
         }
     }
+
+    private Integer getUserIDForVehicle(int vehicleID) {
+        String query = "SELECT userid FROM vehicles WHERE vehicleID = ?";
+
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/smart_park", "root", "");
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, vehicleID);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("userid");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;  // Return null if no userID is found
+    }
+
 
     private long calculateDuration(String startDate, String startTime) {
         // Get the current time
