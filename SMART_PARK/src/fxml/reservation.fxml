@@ -7,23 +7,39 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.reservation">
     <children>
         <Label layoutX="244.0" layoutY="34.0" text="Reservation from user" />
         <Label layoutX="60.0" layoutY="100.0" text="VEHICLE NUMBER" />
         <Label layoutX="60.0" layoutY="136.0" text="TYPE" />
-        <TextField fx:id="vehicleNumberField" layoutX="170.0" layoutY="96.0" />
-        <ChoiceBox fx:id="typeChoiceBox" layoutX="170.0" layoutY="132.0" prefWidth="150.0" />
+        <TextField fx:id="vehicleNumberField" layoutX="170.0" layoutY="96.0" promptText="Enter Vehicle Number" />
+        <ChoiceBox fx:id="typeChoiceBox" layoutX="170.0" layoutY="132.0" prefWidth="150.0">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="Select Type" />
+                    <String fx:value="Bike" />
+                    <String fx:value="Car" />
+                </FXCollections>
+            </items>
+        </ChoiceBox>
         <Label layoutX="59.0" layoutY="172.0" text="SLOT AVAILABLE" />
-        <ChoiceBox fx:id="slotChoiceBox" layoutX="170.0" layoutY="168.0" prefWidth="150.0" />
-        <Button fx:id="makeReservationButton" layoutX="452.0" layoutY="332.0" mnemonicParsing="false" text="Make reservation" onAction="#makeReservation"/>
-        <Button fx:id="cancelButton" layoutX="389.0" layoutY="332.0" mnemonicParsing="false" text="Cancel" onAction="#switchTouserHome"/>
+        <ChoiceBox fx:id="slotChoiceBox" layoutX="170.0" layoutY="168.0" prefWidth="150.0">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="Select Slot" />
+                </FXCollections>
+            </items>
+        </ChoiceBox>
+        <Button fx:id="makeReservationButton" layoutX="452.0" layoutY="332.0" mnemonicParsing="false" onAction="#makeReservation" text="Make reservation" />
+        <Button fx:id="cancelButton" layoutX="389.0" layoutY="332.0" mnemonicParsing="false" onAction="#switchTouserHome" text="Cancel" />
         <DatePicker fx:id="startDatePicker" layoutX="170.0" layoutY="207.0" />
         <Label layoutX="59.0" layoutY="211.0" prefHeight="18.0" prefWidth="89.0" text="START DATE" />
-        <Label layoutX="58.0" layoutY="276.0" text="FROM" />
-        <Label layoutX="57.0" layoutY="315.0" prefHeight="18.0" prefWidth="34.0" text="TO" />
-        <TextField fx:id="fromTimeField" layoutX="170.0" layoutY="281.0" />
-        <TextField fx:id="toTimeField" layoutX="170.0" layoutY="312.0" />
+        <Label layoutX="58.0" layoutY="276.0" text="START TIME" />
+        <Label layoutX="57.0" layoutY="315.0" prefHeight="18.0" prefWidth="89.0" text="END TIME" />
+        <TextField fx:id="fromTimeField" layoutX="170.0" layoutY="281.0" promptText="hh:mm AM/PM" />
+        <TextField fx:id="toTimeField" layoutX="170.0" layoutY="312.0" promptText="hh:mm AM/PM" />
         <Label layoutX="61.0" layoutY="239.0" text="END DATE" />
         <DatePicker fx:id="endDatePicker" layoutX="170.0" layoutY="244.0" />
     </children>
