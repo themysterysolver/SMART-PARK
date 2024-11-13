@@ -1,5 +1,6 @@
 package controllers;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -54,7 +55,6 @@ public class booking implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         // Populate typeChoiceBox with "Bike" and "Car" options
         typeChoiceBox.getItems().addAll("Bike", "Car");
-
         // Load available slots from the database
         loadAvailableSlots();
     }
