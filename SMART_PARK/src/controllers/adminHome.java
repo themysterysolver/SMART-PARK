@@ -1,17 +1,28 @@
 package controllers;
 
 import com.sun.javafx.charts.Legend;
+import javafx.scene.chart.*;
+
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.print.PrinterJob;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.TilePane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -19,6 +30,8 @@ import java.sql.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
 
 public class adminHome {
 
@@ -338,4 +351,119 @@ public class adminHome {
         alert.setContentText(content);
         alert.showAndWait();
     }
+
+
+    private Map<String, Double> fetchCostPerDay() {
+        Map<String, Double> costData = new HashMap<>();
+        String query = "SELECT DAYNAME(startDate) AS day, SUM(cost) AS total_cost " +
+                "FROM transactions WHERE MONTH(startDate) = MONTH(CURDATE()) " +
+                "GROUP BY DAYNAME(startDate) ORDER BY DAYOFWEEK(startDate)";
+
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/smart_park", "root", "");
+             PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                String day = rs.getString("day");
+                double totalCost = rs.getDouble("total_cost");
+                costData.put(day, totalCost);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showAlert("Error", "Failed to fetch cost data for the graph.", Alert.AlertType.ERROR);
+        }
+        return costData;
+    }
+
+    private Map<Integer, Integer> fetchTransactionsPerHour() {
+        Map<Integer, Integer> transactionData = new HashMap<>();
+        String query = "SELECT HOUR(startTime) AS hour, COUNT(*) AS transactions " +
+                "FROM transactions WHERE MONTH(startDate) = MONTH(CURDATE()) " +
+                "GROUP BY HOUR(startTime) ORDER BY hour";
+
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/smart_park", "root", "");
+             PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                int hour = rs.getInt("hour");
+                int transactionCount = rs.getInt("transactions");
+                transactionData.put(hour, transactionCount);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showAlert("Error", "Failed to fetch transaction data for the graph.", Alert.AlertType.ERROR);
+        }
+        return transactionData;
+    }
+    @FXML
+    private void generateReport() {
+        Stage reportStage = new Stage();
+        reportStage.setTitle("Monthly Report");
+
+        // Fetch data for the graphs
+        Map<String, Double> costData = fetchCostPerDay();
+        Map<Integer, Integer> transactionData = fetchTransactionsPerHour();
+
+        // Create Cost vs Days graph
+        CategoryAxis dayAxis = new CategoryAxis();
+        dayAxis.setLabel("Days (Monday - Sunday)");
+        NumberAxis costAxis = new NumberAxis();
+        costAxis.setLabel("Total Cost");
+        LineChart<String, Number> costChart = new LineChart<>(dayAxis, costAxis);
+        XYChart.Series<String, Number> costSeries = new XYChart.Series<>();
+        costSeries.setName("Cost Per Day");
+
+        for (Map.Entry<String, Double> entry : costData.entrySet()) {
+            costSeries.getData().add(new XYChart.Data<>(entry.getKey(), entry.getValue()));
+        }
+        costChart.getData().add(costSeries);
+
+        // Create Time vs Transactions graph
+        NumberAxis hourAxis = new NumberAxis(0, 23, 1);
+        hourAxis.setLabel("Time of Day (Hour)");
+        NumberAxis transactionAxis = new NumberAxis();
+        transactionAxis.setLabel("Number of Transactions");
+        LineChart<Number, Number> transactionChart = new LineChart<>(hourAxis, transactionAxis);
+        XYChart.Series<Number, Number> transactionSeries = new XYChart.Series<>();
+        transactionSeries.setName("Transactions Per Hour");
+
+        for (Map.Entry<Integer, Integer> entry : transactionData.entrySet()) {
+            transactionSeries.getData().add(new XYChart.Data<>(entry.getKey(), entry.getValue()));
+        }
+        transactionChart.getData().add(transactionSeries);
+
+        // Layout for dialog
+        VBox vBox = new VBox(costChart, transactionChart);
+        vBox.setSpacing(10);
+
+        // Add print and close buttons
+        Button printButton = new Button("Print");
+        printButton.setOnAction(event -> printGraphs(costChart, transactionChart));
+
+        Button closeButton = new Button("Close");
+        closeButton.setOnAction(event -> reportStage.close());
+
+        HBox buttonBox = new HBox(10, printButton, closeButton);
+        buttonBox.setAlignment(Pos.CENTER);
+
+        VBox root = new VBox(10, vBox, buttonBox);
+        root.setPadding(new Insets(10));
+
+        Scene scene = new Scene(root, 800, 600);
+        reportStage.setScene(scene);
+        reportStage.show();
+    }
+    private void printGraphs(LineChart<String, Number> costChart, LineChart<Number, Number> transactionChart) {
+        PrinterJob job = PrinterJob.createPrinterJob();
+        if (job != null && job.showPrintDialog(null)) {
+            boolean printed = job.printPage(new VBox(costChart, transactionChart));
+            if (printed) {
+                job.endJob();
+                showAlert("Success", "Graphs printed successfully!", Alert.AlertType.INFORMATION);
+            } else {
+                showAlert("Error", "Failed to print graphs.", Alert.AlertType.ERROR);
+            }
+        }
+    }
+
+
 }
