@@ -41,7 +41,6 @@ public class adminHome {
 
     @FXML
     private Button logoutbutton;
-
     private TilePane slotTilePane;
 
     @FXML
