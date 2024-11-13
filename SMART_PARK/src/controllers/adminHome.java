@@ -1,12 +1,15 @@
 package controllers;
 
+import com.sun.javafx.charts.Legend;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.TilePane;
 import javafx.stage.Stage;
@@ -19,6 +22,7 @@ import java.time.format.DateTimeFormatter;
 
 public class adminHome {
 
+    public TableView statusTableView;
     @FXML
     private AnchorPane LHS;  // AnchorPane for the left side
 
@@ -44,7 +48,50 @@ public class adminHome {
         AnchorPane.setRightAnchor(slotTilePane, 0.0);
 
         fetchSlotData(); // Fetch and display slots on initialization
+
+        TableColumn<SlotStatus, String> statusColumn = new TableColumn<>("STATUS");
+        statusColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getStatus()));
+
+        TableColumn<SlotStatus, Integer> countColumn = new TableColumn<>("COUNT");
+        countColumn.setCellValueFactory(cellData -> new SimpleIntegerProperty(cellData.getValue().getCount()).asObject());
+
+        statusTableView.getColumns().add(statusColumn);
+        statusTableView.getColumns().add(countColumn);
+
+        fetchSlotCounts();  // Fetch and display slot counts on initialization
     }
+    private void fetchSlotCounts() {
+        String url = "jdbc:mysql://localhost:3306/smart_park";  // Your DB URL
+        String user = "root";  // Your DB username
+        String password = "";  // Your DB password
+
+        String query = "SELECT availability, COUNT(*) AS count FROM slots GROUP BY availability";
+
+        try (Connection conn = DriverManager.getConnection(url, user, password);
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+
+            // Clear existing data
+            ObservableList<SlotStatus> statusList = FXCollections.observableArrayList();
+
+            // Iterate over result set and create SlotStatus objects
+            while (rs.next()) {
+                String availability = rs.getString("availability");
+                int count = rs.getInt("count");
+
+                // Add status and count to the list
+                statusList.add(new SlotStatus(availability, count));
+            }
+
+            // Set data to the TableView
+            statusTableView.setItems(statusList);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showAlert("Error", "Failed to fetch slot counts from the database.", Alert.AlertType.ERROR);
+        }
+    }
+
 
     private void fetchSlotData() {
         // Database connection setup (use your actual database credentials here)
