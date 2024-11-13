@@ -117,9 +117,9 @@ public class adminHome {
     }
     private void completeBooking(int slotID, Integer vehicleID, String startDate, String startTime) {
         // Calculate the duration and cost
-        long durationInHours = calculateDuration(startDate, startTime);
+        long durationInMinutes = calculateDuration(startDate, startTime);
         double costPerHour = getCostPerHour(vehicleID);
-        double totalCost = (costPerHour / 24) * durationInHours;
+        double totalCost = (costPerHour / 60) * durationInMinutes;
 
         // Get current time for endDate and endTime
         LocalDateTime currentTime = LocalDateTime.now();
@@ -139,7 +139,7 @@ public class adminHome {
             stmt.setString(5, startTime);
             stmt.setString(6, endDate);
             stmt.setString(7, endTime);
-            stmt.setLong(8, durationInHours);  // Insert durationInHours
+            stmt.setLong(8, durationInMinutes);  // Insert durationInHours
             stmt.executeUpdate();
 
             // Update the slot status and clear vehicle-related data in the slot table
@@ -169,10 +169,11 @@ public class adminHome {
         String startDateTime = startDate + " " + startTime;
         LocalDateTime startDateTimeParsed = LocalDateTime.parse(startDateTime, formatter);
 
-        // Calculate the duration in hours
+        // Calculate the duration in minutes
         Duration duration = Duration.between(startDateTimeParsed, currentTime);
-        return duration.toHours();
+        return duration.toMinutes();  // Return the duration in minutes
     }
+
 
     private double getCostPerHour(int vehicleID) {
         String query = "SELECT cost FROM cost WHERE type = (SELECT vehicle_type FROM vehicles WHERE vehicleID = ?)";
