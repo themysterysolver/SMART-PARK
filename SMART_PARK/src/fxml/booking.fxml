@@ -7,20 +7,35 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="361.0" prefWidth="598.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.booking">
+<AnchorPane id="generate" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.booking">
    <children>
-      <Label layoutX="244.0" layoutY="34.0" text="Booking from Admin" />
+      <!-- Header Label -->
+      <Label layoutX="230.0" layoutY="30.0" text="Booking from Admin" />
+
+      <!-- Vehicle Number Label and Field -->
       <Label layoutX="60.0" layoutY="100.0" text="VEHICLE NUMBER" />
+      <TextField fx:id="vehicleNumberField" layoutX="170.0" layoutY="96.0" promptText="Enter Vehicle Number" />
+
+      <!-- Type Label and ChoiceBox -->
       <Label layoutX="60.0" layoutY="136.0" text="TYPE" />
-      <TextField layoutX="170.0" layoutY="96.0" />
-      <ChoiceBox layoutX="170.0" layoutY="132.0" prefWidth="150.0" />
-      <Label layoutX="59.0" layoutY="172.0" text="SLOT AVAILABLE" />
-      <ChoiceBox layoutX="170.0" layoutY="168.0" prefWidth="150.0" />
+      <ChoiceBox fx:id="typeChoiceBox" layoutX="170.0" layoutY="132.0" prefWidth="150.0" />
+
+      <!-- Slot Available Label and ChoiceBox -->
+      <Label layoutX="60.0" layoutY="172.0" text="SLOT AVAILABLE" />
+      <ChoiceBox fx:id="slotChoiceBox" layoutX="170.0" layoutY="168.0" prefWidth="150.0" />
+
+      <!-- User ID Label and Field -->
       <Label layoutX="60.0" layoutY="208.0" text="USER ID" />
-      <Button layoutX="338.0" layoutY="204.0" mnemonicParsing="false" text="G" />
-      <TextField layoutX="171.0" layoutY="204.0" />
-      <Button layoutX="478.0" layoutY="292.0" mnemonicParsing="false" text="Book it!" />
-      <Button fx:id="cancel" layoutX="418.0" layoutY="292.0" mnemonicParsing="false" text="cancel" onAction="#switchToadminHome"/>
-      <TextArea layoutX="443.0" layoutY="20.0" prefHeight="62.0" prefWidth="135.0" />
+      <TextField fx:id="userIdField" layoutX="170.0" layoutY="204.0" promptText="Enter User ID" />
+
+      <!-- Book Button -->
+      <Button fx:id="bookButton" layoutX="478.0" layoutY="292.0" mnemonicParsing="false" onAction="#bookSlot" text="Book it!" />
+
+      <!-- Cancel Button -->
+      <Button fx:id="cancel" layoutX="418.0" layoutY="292.0" mnemonicParsing="false" onAction="#switchToadminHome" text="Cancel" />
+
+      <!-- Feedback Area -->
+      <TextArea fx:id="feedbackArea" editable="false" layoutX="443.0" layoutY="20.0" prefHeight="62.0" prefWidth="135.0" wrapText="true" />
+      <Button layoutX="332.0" layoutY="204.0" mnemonicParsing="false" text="G" />
    </children>
 </AnchorPane>
