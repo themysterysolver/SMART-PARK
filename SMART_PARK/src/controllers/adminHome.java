@@ -6,12 +6,16 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.TilePane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.sql.*;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class adminHome {
 
@@ -48,7 +52,7 @@ public class adminHome {
         String user = "root";  // Your DB username
         String password = "";  // Your DB password
 
-        String query = "SELECT slotID, availability, vehicleID FROM slots";
+        String query = "SELECT slotID, availability, vehicleID, startDate, startTime FROM slots";
 
         try (Connection conn = DriverManager.getConnection(url, user, password);
              Statement stmt = conn.createStatement();
@@ -59,6 +63,10 @@ public class adminHome {
                 int slotID = rs.getInt("slotID");
                 String availability = rs.getString("availability");
                 Integer vehicleID = rs.getObject("vehicleID", Integer.class);  // If vehicleID is NULL, return null
+
+                String startDate = rs.getString("startDate");
+                String startTime = rs.getString("startTime");
+
 
                 String vehicleNumber = null;
                 if (vehicleID != null) {
@@ -79,6 +87,7 @@ public class adminHome {
                 } else if ("booked".equals(availability)) {
                     slotButton.setText("Slot " + slotID + "\nBooked\n" + (vehicleNumber != null ? vehicleNumber : ""));
                     slotButton.setStyle("-fx-background-color: #FF6347;"); // Red for booked
+                    slotButton.setOnAction(event -> handleBookedSlot(slotID, vehicleID, startDate, startTime));
                 }
 
                 // Add the button to the TilePane
@@ -89,6 +98,101 @@ public class adminHome {
             showAlert("Error", "Failed to fetch slot data from the database.", Alert.AlertType.ERROR);
         }
     }
+    // Assuming each slot has a booking with a userID. You fetch it when the booking is being completed.
+
+
+
+    private void handleBookedSlot(int slotID, Integer vehicleID, String startDate, String startTime) {
+        // Show a dialog to complete booking
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Complete Booking");
+        alert.setHeaderText("Do you want to complete the booking for Slot " + slotID + "?");
+
+        // Wait for the user's response
+        alert.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                completeBooking(slotID, vehicleID, startDate, startTime);
+            }
+        });
+    }
+    private void completeBooking(int slotID, Integer vehicleID, String startDate, String startTime) {
+        // Calculate the duration and cost
+        long durationInHours = calculateDuration(startDate, startTime);
+        double costPerHour = getCostPerHour(vehicleID);
+        double totalCost = (costPerHour / 24) * durationInHours;
+
+        // Get current time for endDate and endTime
+        LocalDateTime currentTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String endDate = currentTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        String endTime = currentTime.format(DateTimeFormatter.ofPattern("HH:mm:ss"));
+
+        // Insert the transaction record into the transaction table
+        String transactionQuery = "INSERT INTO transactions (slotID, vehicleID, cost, startDate, startTime, endDate, endTime, duration) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/smart_park", "root", "");
+             PreparedStatement stmt = conn.prepareStatement(transactionQuery)) {
+            stmt.setInt(1, slotID);
+            stmt.setInt(2, vehicleID);
+            stmt.setDouble(3, totalCost);
+            stmt.setString(4, startDate);
+            stmt.setString(5, startTime);
+            stmt.setString(6, endDate);
+            stmt.setString(7, endTime);
+            stmt.setLong(8, durationInHours);  // Insert durationInHours
+            stmt.executeUpdate();
+
+            // Update the slot status and clear vehicle-related data in the slot table
+            String updateSlotQuery = "UPDATE slots SET availability = 'available', vehicleID = NULL, startDate = NULL, startTime = NULL WHERE slotID = ?";
+            try (PreparedStatement updateStmt = conn.prepareStatement(updateSlotQuery)) {
+                updateStmt.setInt(1, slotID);
+                updateStmt.executeUpdate();
+            }
+
+            // Clear the existing slot buttons and reload the updated data
+            slotTilePane.getChildren().clear(); // Clear the old slot buttons
+            fetchSlotData();
+            // Show success message
+            showAlert("Success", "Booking completed successfully!", Alert.AlertType.INFORMATION);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showAlert("Error", "Failed to complete the booking.", Alert.AlertType.ERROR);
+        }
+    }
+
+    private long calculateDuration(String startDate, String startTime) {
+        // Get the current time
+        LocalDateTime currentTime = LocalDateTime.now();
+
+        // Convert startDate and startTime to LocalDateTime
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String startDateTime = startDate + " " + startTime;
+        LocalDateTime startDateTimeParsed = LocalDateTime.parse(startDateTime, formatter);
+
+        // Calculate the duration in hours
+        Duration duration = Duration.between(startDateTimeParsed, currentTime);
+        return duration.toHours();
+    }
+
+    private double getCostPerHour(int vehicleID) {
+        String query = "SELECT cost FROM cost WHERE type = (SELECT vehicle_type FROM vehicles WHERE vehicleID = ?)";
+
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/smart_park", "root", "");
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, vehicleID);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getDouble("cost");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return 0.0;
+    }
+
+
 
     // Method to fetch vehicle number for a given vehicleID
     private String getVehicleNumber(int vehicleID) {

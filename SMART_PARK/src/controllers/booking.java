@@ -178,7 +178,7 @@ public class booking implements Initializable {
             }
 
             showAlert("Booking Successful", "Booking successful for vehicle " + registrationNumber, Alert.AlertType.INFORMATION);
-
+            switchToadminHome();
         } catch (SQLException e) {
             e.printStackTrace();
             showAlert("Booking Error", "Error during booking: " + e.getMessage(), Alert.AlertType.ERROR);
